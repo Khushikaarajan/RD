@@ -260,12 +260,40 @@ function handleClick(e) {
   createPetalBlast(e.clientX, e.clientY);
 }
 
-// Handle touch events (mobile)
-function handleTouch(e) {
-  const touch = e.touches[0] || e.changedTouches[0];
-  if (touch) {
-    createPetalBlast(touch.clientX, touch.clientY);
+// Handle touch events (mobile) - track if user is scrolling
+let touchStartY = 0;
+let touchStartX = 0;
+let isScrolling = false;
+
+function handleTouchStart(e) {
+  const touch = e.touches[0];
+  touchStartY = touch.clientY;
+  touchStartX = touch.clientX;
+  isScrolling = false;
+}
+
+function handleTouchMove(e) {
+  if (!isScrolling) {
+    const touch = e.touches[0];
+    const deltaY = Math.abs(touch.clientY - touchStartY);
+    const deltaX = Math.abs(touch.clientX - touchStartX);
+
+    // If moved more than 10px, consider it scrolling
+    if (deltaY > 10 || deltaX > 10) {
+      isScrolling = true;
+    }
   }
+}
+
+function handleTouchEnd(e) {
+  // Only create blast if not scrolling (i.e., it was a tap)
+  if (!isScrolling) {
+    const touch = e.changedTouches[0];
+    if (touch) {
+      createPetalBlast(touch.clientX, touch.clientY);
+    }
+  }
+  isScrolling = false;
 }
 
 // ==========================================
@@ -294,7 +322,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Add petal blast on click/touch
   document.addEventListener("click", handleClick);
-  document.addEventListener("touchstart", handleTouch, { passive: true });
+  document.addEventListener("touchstart", handleTouchStart, { passive: true });
+  document.addEventListener("touchmove", handleTouchMove, { passive: true });
+  document.addEventListener("touchend", handleTouchEnd, { passive: true });
 
   console.log("🌹 Rose Day website loaded successfully! 🌹");
   console.log("💥 Click or touch anywhere to create a petal blast! 💥");
