@@ -262,7 +262,6 @@ function handleClick(e) {
 
 // Handle touch events (mobile)
 function handleTouch(e) {
-  e.preventDefault(); // Prevent default touch behavior
   const touch = e.touches[0] || e.changedTouches[0];
   if (touch) {
     createPetalBlast(touch.clientX, touch.clientY);
@@ -295,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Add petal blast on click/touch
   document.addEventListener("click", handleClick);
-  document.addEventListener("touchstart", handleTouch, { passive: false });
+  document.addEventListener("touchstart", handleTouch, { passive: true });
 
   console.log("🌹 Rose Day website loaded successfully! 🌹");
   console.log("💥 Click or touch anywhere to create a petal blast! 💥");
